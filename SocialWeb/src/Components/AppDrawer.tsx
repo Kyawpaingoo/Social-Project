@@ -26,6 +26,13 @@ import { useNavigate } from 'react-router-dom';
 const AppDrawer = () =>{
     const { showDrawer, setShowDrawer, auth, setAuth} = useThemeHook();
     const navigate = useNavigate();
+    
+
+    const logout = async()=>{
+        localStorage.removeItem("token");
+        setAuth(null);
+        navigate('/');
+    }
     return (
         <div>
             <Drawer
@@ -61,7 +68,7 @@ const AppDrawer = () =>{
                             }}
                         />
                         <Typography sx={{fontWeight: 'blod'}}>
-                            Alice
+                            {auth && typeof auth !== 'boolean' ? auth.name : 'Guest'}
                         </Typography>
                     </Box>
                 </Box>
@@ -83,7 +90,7 @@ const AppDrawer = () =>{
                             <>
                                 <ListItem>
                                     <ListItemButton
-                                        onClick={()=>navigate('/profile/1')}
+                                        onClick={()=>navigate(`/profile/${auth.id}`)}
                                     >
                                         <ListItemIcon>
                                             <ProfileIcon />
@@ -93,7 +100,7 @@ const AppDrawer = () =>{
                                 </ListItem>
 
                                 <ListItem>
-                                    <ListItemButton onClick={()=> setAuth(false)}>
+                                    <ListItemButton onClick={logout}>
                                         <ListItemIcon>
                                             <LogoutIcon />
                                         </ListItemIcon>

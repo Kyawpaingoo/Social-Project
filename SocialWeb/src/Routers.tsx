@@ -15,6 +15,9 @@ const Routers= createBrowserRouter([
         children: [
             {
                 path: '/',
+                // loader: async()=>{
+
+                // },
                 element: <Home />
             },
             {
@@ -34,7 +37,7 @@ const Routers= createBrowserRouter([
                 element: <Comments />
             },
             {
-                path: '/likes/:id',
+                path: '/likes/:id/:type',
                 element: <Likes />
             }
         ]

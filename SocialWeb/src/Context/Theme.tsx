@@ -1,4 +1,4 @@
-import { createContext, Dispatch, useContext, SetStateAction, useState, useMemo } from "react";
+import { createContext, Dispatch, useContext, SetStateAction, useState, useMemo, useEffect } from "react";
 import React from "react";
 import {
     CssBaseline,
@@ -9,6 +9,9 @@ import {
 import { deepPurple, grey } from "@mui/material/colors";
 import { RouterProvider } from "react-router-dom";
 import Routers from "../Routers";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { UserType } from '../DataTypes/User';
+import { fetchVerify } from "../Libs/fetcher";
 
 // type authType  = any;
 
@@ -19,8 +22,8 @@ type ThemeContextType = {
     setMode: Dispatch<SetStateAction<PaletteMode>>;
     showDrawer: boolean,
     setShowDrawer:  Dispatch<SetStateAction<boolean>>,
-    auth: boolean | null,
-    setAuth:  Dispatch<SetStateAction<boolean | null>>
+    auth: UserType | null,
+    setAuth:  Dispatch<SetStateAction<UserType | null>>
     globalMsg: string | null,
     setGlobalMsg: Dispatch<SetStateAction<string | null>>
 }
@@ -32,7 +35,7 @@ export const ThemeContext = createContext<ThemeContextType>({
     setMode: ()=>{},
     showDrawer: false,
     setShowDrawer: ()=>{},
-    auth: false,
+    auth: null,
     setAuth: ()=>{},
     globalMsg: null,
     setGlobalMsg: ()=>{}
@@ -42,11 +45,13 @@ export const useThemeHook = () =>{
     return useContext(ThemeContext);
 }
 
+export const queryClient = new QueryClient();
+
 const Theme: React.FC = ()=>{
     const [mode, setMode] = useState<PaletteMode>("dark");
     const [showForm,setShowForm] = useState<boolean>(false);
     const [showDrawer, setShowDrawer] = useState<boolean>(false);
-    const [auth, setAuth] = useState<boolean  | null>(false);
+    const [auth, setAuth] = useState<UserType | null>(null);
     const [globalMsg, setGlobalMsg] = useState<string | null>(null);
 
     const theme = useMemo(()=>{
@@ -62,6 +67,12 @@ const Theme: React.FC = ()=>{
         });
     },[mode]);
 
+    useEffect(()=> {
+        fetchVerify().then((user) => {
+            if(user) setAuth(user);
+        })
+    },[])
+
     return (
         <ThemeProvider theme={theme}>
             <ThemeContext.Provider value={{
@@ -76,7 +87,9 @@ const Theme: React.FC = ()=>{
                 globalMsg,
                 setGlobalMsg
             }}>
-                <RouterProvider router={Routers} />
+                <QueryClientProvider client={queryClient}>
+                    <RouterProvider router={Routers} />
+                </QueryClientProvider>
                 <CssBaseline />
             </ThemeContext.Provider>
         </ThemeProvider>

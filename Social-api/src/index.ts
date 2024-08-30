@@ -1,16 +1,45 @@
-
+import dotenv from 'dotenv';
 import express, {Request, Response}  from "express";
-import cors from 'cors';
-import prisma from "./prisma";
+import cors, { CorsOptions } from 'cors';
+import prisma from "./prisma/prisma";
 import ContentRouter from "./Routers/ContentRouter";
+import UserRouter from "./Routers/UserRouter";
+import CommentRouter from "./Routers/CommentRouter";
+
+dotenv.config();
+
 const app = express();
-app.use(cors());
+
+const allowedOrigin = ['http://localhost:3000'];
+
+type CorsOptionsCallback = (err: Error | null, allow?: boolean) => void;
+const corsOptions: CorsOptions = {
+    origin: function(origin: string | undefined, callback: CorsOptionsCallback) {
+        if(!origin || allowedOrigin.includes(origin)){
+            callback(null, true)
+        } else {
+             callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}
+app.use(cors(corsOptions));
+
+app.use(express.json());
+app.use(express.urlencoded(
+    {
+        extended: true
+    })
+);
+
 
 app.get('/info', (req: Request, res: Response)=>{
     res.json({msg: 'Social API'});
 });
 
 app.use("/api/content", ContentRouter);
+app.use("/api/user", UserRouter);
+app.use('/api/comment', CommentRouter);
 
 const server = app.listen(8000, ()=>{
     console.log('Social API started at 8000...');

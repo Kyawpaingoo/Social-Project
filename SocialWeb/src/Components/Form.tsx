@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 
 type FormProps = {
-    add: (content: string, name: string)=>Promise<void>;
+    add: (content: string)=>void;
 }
 
 const Form: React.FC<FormProps> = (props: FormProps) => {
@@ -16,7 +16,7 @@ const Form: React.FC<FormProps> = (props: FormProps) => {
         e.preventDefault();
         const content = contentRef.current?.value || '';
 
-        props.add(content, "Alice");
+        props.add(content);
         e.currentTarget.reset();
     }
    

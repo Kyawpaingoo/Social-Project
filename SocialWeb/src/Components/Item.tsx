@@ -1,19 +1,30 @@
 import React from 'react'
-import { DataTye } from '../Pages/Home'
 
 import {Box, Card, CardContent, Typography, IconButton} from '@mui/material'
 import { Alarm as TimeIcon, AccountCircle as UserIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import {green} from '@mui/material/colors'
 import { useNavigate } from 'react-router-dom'
+import { formatRelative } from 'date-fns'
+import { PostListType } from '../DataTypes/Post'
+import { CommentDetail, PostCommentType } from '../DataTypes/Comment'
+import LikeButton from './LikeButton'
+import CommentButton from './CommentButton'
 
 type ItemProps = {
-    item: DataTye
-    remove:(id: number)=> Promise<void>,
-    primary?: boolean
+    item: PostListType | CommentDetail | PostCommentType,
+    remove: (id: number)=>void,
+    primary?: boolean,
+    comment?: boolean,
+    isOwner?: string,
 }
 
 const Item: React.FC<ItemProps> = (props: ItemProps) => {
   const navigate = useNavigate();
+
+  const id: number | null = 'id' in props.item ? props.item.id : null;
+  const created: string | null = 'created' in props.item ? props.item.created : null;
+  const content = 'content' in props.item ? props.item.content : undefined;
+  const user = 'user' in props.item ? props.item.user : undefined;
 
   return (
    <Card sx={{ mb: 2}}>
@@ -21,7 +32,10 @@ const Item: React.FC<ItemProps> = (props: ItemProps) => {
       props.primary && <Box sx={{ height: 50, bgcolor: green[500]}} />
     }
     <CardContent
-      onClick={()=>navigate('/comments/1')}
+      onClick={()=>{
+        if(props.comment) return false;
+        navigate(`/comments/${id}`)
+      }}
     >
       <Box
         sx={{
@@ -45,35 +59,52 @@ const Item: React.FC<ItemProps> = (props: ItemProps) => {
               color: green[500]
             }}
           >
-            A few second ago
+           {
+            formatRelative(created ?? Date.now(), new Date())
+           }
           </Typography>
         </Box>
         <IconButton
           size='small'
-          onClick={(e)=>{
-            props.remove(props.item.id);
-            e.stopPropagation();
-          }}
+          onClick={()=>props.remove(id ?? 1)}
         >
           <DeleteIcon fontSize='inherit' />
         </IconButton>
       </Box>
 
-      <Typography sx={{ my: 3}}>{props.item.content}</Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 1
-        }}
-      >
-        <UserIcon 
-          fontSize='medium'
-          color='info'
-        />
-        <Typography variant='caption'>{props.item.name}</Typography>
+      <Typography sx={{ my: 3}}>{content}</Typography>
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:'center',
+        justifyContent: 'space-between'
+      }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 1
+            }}
+            onClick={
+              (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+                navigate(`/profile/${id}`);
+                e.stopPropagation();
+              }
+            }
+          >
+            <UserIcon 
+              fontSize='medium'
+              color='info'
+            />
+            <Typography variant='caption'>{user?.name}</Typography>
+          </Box>
+          <Box>
+            <LikeButton item={props.item as PostListType} comment={props.comment} />
+            <CommentButton item={props.item as PostListType} comment={props.comment} />
+          </Box>
       </Box>
+      
     </CardContent>
    </Card>
   )
