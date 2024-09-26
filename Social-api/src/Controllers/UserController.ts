@@ -38,7 +38,9 @@ export const GetByID = async (req: Request, res: Response): Promise<void> => {
         },
         include: {
             post: true, 
-            comments: true
+            comments: true,
+            followers: true,
+            follwoing: true,
         }
     });
 

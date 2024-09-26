@@ -44,7 +44,9 @@ const GetByID = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         },
         include: {
             post: true,
-            comments: true
+            comments: true,
+            followers: true,
+            follwoing: true,
         }
     });
     if (data == null) {

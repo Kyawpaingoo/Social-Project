@@ -5,6 +5,7 @@ import prisma from "./prisma/prisma";
 import ContentRouter from "./Routers/ContentRouter";
 import UserRouter from "./Routers/UserRouter";
 import CommentRouter from "./Routers/CommentRouter";
+import FollowRouter from './Routers/FollowController';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.get('/info', (req: Request, res: Response)=>{
 app.use("/api/content", ContentRouter);
 app.use("/api/user", UserRouter);
 app.use('/api/comment', CommentRouter);
+app.use('/api/follow', FollowRouter);
 
 const server = app.listen(8000, ()=>{
     console.log('Social API started at 8000...');

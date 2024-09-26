@@ -19,6 +19,7 @@ const prisma_1 = __importDefault(require("./prisma/prisma"));
 const ContentRouter_1 = __importDefault(require("./Routers/ContentRouter"));
 const UserRouter_1 = __importDefault(require("./Routers/UserRouter"));
 const CommentRouter_1 = __importDefault(require("./Routers/CommentRouter"));
+const FollowController_1 = __importDefault(require("./Routers/FollowController"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const allowedOrigin = ['http://localhost:3000'];
@@ -44,6 +45,7 @@ app.get('/info', (req, res) => {
 app.use("/api/content", ContentRouter_1.default);
 app.use("/api/user", UserRouter_1.default);
 app.use('/api/comment', CommentRouter_1.default);
+app.use('/api/follow', FollowController_1.default);
 const server = app.listen(8000, () => {
     console.log('Social API started at 8000...');
 });
